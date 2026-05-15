@@ -412,8 +412,11 @@ export default function App() {
     <div className="app">
       <div className="top">
         <div className="brand">
-          <div className="brand-title">Săptămâna mea</div>
-          <div className="brand-sub">Planificator personal</div>
+          <img src="/logo.png" alt="Logo" className="brand-logo" />
+          <div className="brand-text">
+            <div className="brand-title">Săptămâna mea</div>
+            <div className="brand-sub">Planificator personal</div>
+          </div>
         </div>
         <div className="week-nav">
           <button className="nav-btn" onClick={() => setWeekOffset(w => w - 1)}>←</button>
