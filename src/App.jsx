@@ -237,6 +237,8 @@ export default function App() {
   
   const dragState = useRef({ id: null, fromDay: null })
   const sortDrag = useRef({ el: null, day: null, id: null })
+  const gridRef = useRef(null)
+  const hasScrolled = useRef(false)
 
   // Load from localStorage
   useEffect(() => {
@@ -258,6 +260,21 @@ export default function App() {
     } catch (e) {}
   }, [store])
 
+  const dates = useMemo(() => getDates(weekOffset), [weekOffset])
+
+  // Auto-scroll to today on mount
+  useEffect(() => {
+    if (hasScrolled.current) return
+    const todayIndex = dates.findIndex(d => isToday(d))
+    if (todayIndex >= 0 && gridRef.current) {
+      const cols = gridRef.current.querySelectorAll('.col')
+      if (cols[todayIndex]) {
+        cols[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'start' })
+        hasScrolled.current = true
+      }
+    }
+  }, [dates])
+
   const getTasks = useCallback((weekOff, dayIdx) => {
     const k = getDayKey(weekOff, dayIdx)
     return store[k] || []
@@ -266,8 +283,6 @@ export default function App() {
   const setTasks = useCallback((weekOff, dayIdx, arr) => {
     setStore(prev => ({ ...prev, [getDayKey(weekOff, dayIdx)]: arr }))
   }, [])
-
-  const dates = useMemo(() => getDates(weekOffset), [weekOffset])
 
   const indices = useMemo(() => 
     activeDayFilter >= 0 ? [activeDayFilter] : Array.from({length:7},(_,i)=>i),
@@ -427,7 +442,7 @@ export default function App() {
         <div className="leg-item"><div className="leg-dot" style={{background:'var(--personal)'}}></div> Personal</div>
       </div>
 
-      <div className="grid">
+      <div className="grid" ref={gridRef}>
         {indices.map(i => (
           <Column
             key={i}
