@@ -267,11 +267,13 @@ export default function App() {
     if (hasScrolled.current) return
     const todayIndex = dates.findIndex(d => isToday(d))
     if (todayIndex >= 0 && gridRef.current) {
-      const cols = gridRef.current.querySelectorAll('.col')
-      if (cols[todayIndex]) {
-        cols[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'start' })
-        hasScrolled.current = true
-      }
+      setTimeout(() => {
+        const cols = gridRef.current.querySelectorAll('.col')
+        if (cols[todayIndex]) {
+          cols[todayIndex].scrollIntoView({ behavior: 'auto', block: 'start' })
+          hasScrolled.current = true
+        }
+      }, 100)
     }
   }, [dates])
 
