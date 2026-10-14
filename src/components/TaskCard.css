@@ -1,0 +1,48 @@
+.card-fade {
+  opacity: 0.45;
+  filter: grayscale(0.4);
+}
+
+.card-conflict {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--personal);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-repeat {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 7px 0 0 5px;
+  color: var(--text3);
+}
+
+.card-check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  background: var(--surface2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.card-check:hover { border-color: var(--accent); }
+
+.card-check.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
