@@ -1,342 +1,159 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import Modal from './components/Modal.jsx'
+import WeekView from './components/WeekView.jsx'
+import DayView from './components/DayView.jsx'
+import { DAYS, getDates, getDayKey, weekOffsetForDate, dateKey, formatWeekRange } from './lib/dates.js'
+import { sortByTime } from './lib/day.js'
+import { instancesOnDate, markRecurringDone } from './lib/recurring.js'
 
-const DAYS = ['Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă','Duminică']
-const MONTHS = ['ian','feb','mar','apr','mai','iun','iul','aug','sep','oct','nov','dec']
+const DAY_SVG = (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
+    <path d="M1.5 5.5h11" stroke="currentColor" strokeWidth="1.2"/>
+    <circle cx="7" cy="9" r="1.6" fill="currentColor"/>
+  </svg>
+)
 
-const TYPE = {
-  work:     { color: 'var(--work)',     bg: 'var(--work-bg)',     label: 'Muncă' },
-  course:   { color: 'var(--course)',   bg: 'var(--course-bg)',   label: 'Curs' },
-  hobby:    { color: 'var(--hobby)',    bg: 'var(--hobby-bg)',    label: 'Hobby' },
-  personal: { color: 'var(--personal)', bg: 'var(--personal-bg)', label: 'Personal' },
-  health:   { color: 'var(--health)',   bg: 'var(--health-bg)',   label: 'Sănătate' },
-  learn:    { color: 'var(--learn)',    bg: 'var(--learn-bg)',    label: 'Învățare' },
-  rest:     { color: 'var(--rest)',     bg: 'var(--rest-bg)',     label: 'Odihnă' },
-}
-
-function getISOWeek(d) {
-  const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
-  tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7))
-  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1))
-  return Math.ceil((((tmp - yearStart) / 86400000) + 1) / 7)
-}
-
-function getMonday(offset) {
-  const d = new Date()
-  const day = d.getDay() || 7
-  d.setDate(d.getDate() - day + 1 + offset * 7)
-  d.setHours(0,0,0,0)
-  return d
-}
-
-function getDates(offset) {
-  const mon = getMonday(offset)
-  return Array.from({length:7}, (_,i) => {
-    const d = new Date(mon)
-    d.setDate(mon.getDate() + i)
-    return d
-  })
-}
-
-function isToday(d) {
-  return d.toDateString() === new Date().toDateString()
-}
-
-function getWeekKey(offset) {
-  const mon = getMonday(offset)
-  return `${mon.getFullYear()}-W${String(getISOWeek(mon)).padStart(2,'0')}`
-}
-
-function getDayKey(weekOffset, dayIdx) {
-  return getWeekKey(weekOffset) + '-' + dayIdx
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-}
-
-function formatWeekRange(offset) {
-  const dates = getDates(offset)
-  const s = dates[0], e = dates[6]
-  if (s.getMonth() === e.getMonth())
-    return `${s.getDate()} – ${e.getDate()} ${MONTHS[s.getMonth()]} ${s.getFullYear()}`
-  return `${s.getDate()} ${MONTHS[s.getMonth()]} – ${e.getDate()} ${MONTHS[e.getMonth()]} ${s.getFullYear()}`
-}
-
-function TaskCard({ task, dayIdx, onEdit, onDelete, onDragStart, onDragEnd, onDragOver, onDrop }) {
-  const tp = TYPE[task.type] || TYPE.work
-  const timeStr = (task.time || task.endTime)
-    ? <span className="card-time">
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-          <circle cx="5" cy="5" r="4" stroke="currentColor" strokeWidth="1"/>
-          <path d="M5 3v2l1.5 1" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
-        </svg>
-        {[task.time, task.endTime].filter(Boolean).join(' – ')}
-      </span>
-    : ''
-
-  return (
-    <div
-      className="task-card"
-      draggable="true"
-      data-id={task.id}
-      data-day={dayIdx}
-      onDragStart={(e) => onDragStart(e, task.id, dayIdx)}
-      onDragEnd={onDragEnd}
-      onDragOver={(e) => onDragOver(e, task.id, dayIdx)}
-      onDrop={(e) => onDrop(e, task.id, dayIdx)}
-    >
-      <div className="card-top">
-        <span className="card-dot" style={{background: tp.color}} />
-        <div className="card-info">
-          <div className="card-title">{escHtml(task.title)}</div>
-          {timeStr}
-          <span className="card-tag" style={{background: tp.bg, color: tp.color}}>{tp.label}</span>
-        </div>
-        <div className="card-actions">
-          <button className="icon-btn" title="Editează" onClick={() => onEdit(task)}>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M8 2l2 2-6 6H2v-2L8 2Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          <button className="icon-btn del" title="Șterge" onClick={() => onDelete(task.id)}>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Column({ dayIdx, tasks, date, onAdd, onEdit, onDelete, onDragStart, onDragEnd, onDragOver, onDrop, onTaskDragOver, onTaskDrop }) {
-  const todayBadge = isToday(date)
-    ? <span className="col-today-badge">Azi</span>
-    : <span className="col-count">{tasks.length} task{tasks.length !== 1 ? 'uri' : ''}</span>
-
-  return (
-    <div 
-      className="col"
-      data-day={dayIdx}
-      onDragOver={(e) => onDragOver(e, dayIdx)}
-      onDragLeave={(e) => onDragLeave(e, dayIdx)}
-      onDrop={(e) => onDrop(e, dayIdx)}
-    >
-      <div className="col-head">
-        <div>
-          <div className="col-day-name">{DAYS[dayIdx]}</div>
-          <div className="col-day-date">{date.getDate()} {MONTHS[date.getMonth()]} {date.getFullYear()}</div>
-        </div>
-        {todayBadge}
-      </div>
-      <div className="col-body" id={`body-${dayIdx}`}>
-        {tasks.map(task => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            dayIdx={dayIdx}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            onDragOver={onTaskDragOver}
-            onDrop={onTaskDrop}
-          />
-        ))}
-      </div>
-      <div className="add-row">
-        <button className="add-btn" onClick={() => onAdd(dayIdx)}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M6 1v10M1 6h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
-          Adaugă task
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function Modal({ isOpen, mode, task, dayIdx, onClose, onSave }) {
-  const [title, setTitle] = useState('')
-  const [type, setType] = useState('work')
-  const [time, setTime] = useState('')
-  const [endTime, setEndTime] = useState('')
-  const titleRef = useRef(null)
-
-  useEffect(() => {
-    if (isOpen) {
-      if (mode === 'edit' && task) {
-        setTitle(task.title)
-        setType(task.type)
-        setTime(task.time || '')
-        setEndTime(task.endTime || '')
-      } else {
-        setTitle('')
-        setType('work')
-        setTime('')
-        setEndTime('')
-      }
-      setTimeout(() => titleRef.current?.focus(), 80)
-    }
-  }, [isOpen, mode, task])
-
-  const handleSave = () => {
-    if (!title.trim()) {
-      titleRef.current?.focus()
-      return
-    }
-    onSave({ title: title.trim(), type, time, endTime })
-  }
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSave()
-  }
-
-  const headerText = mode === 'edit' ? 'Editează task' : `Adaugă în ${DAYS[dayIdx]}`
-
-  return (
-    <div className={`modal-bg ${isOpen ? 'open' : ''}`} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal" onKeyDown={handleKeyDown}>
-        <h3>{headerText}</h3>
-        <div className="field">
-          <label>Titlu</label>
-          <input
-            ref={titleRef}
-            type="text"
-            id="taskTitle"
-            placeholder="ex: Yoga, React curs, Ședință..."
-            maxLength="60"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-        <div className="field">
-          <label>Tip</label>
-          <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="work">Muncă</option>
-            <option value="course">Curs</option>
-            <option value="hobby">Hobby</option>
-            <option value="personal">Personal</option>
-            <option value="health">Sănătate</option>
-            <option value="learn">Învățare</option>
-            <option value="rest">Odihnă</option>
-          </select>
-        </div>
-        <div className="field-row">
-          <div className="field">
-            <label>Început (opțional)</label>
-            <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
-          </div>
-          <div className="field">
-            <label>Sfârșit</label>
-            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-          </div>
-        </div>
-        <div className="modal-btns">
-          <button className="mbtn cancel" onClick={onClose}>Anulează</button>
-          <button className="mbtn save" onClick={handleSave}>Salvează</button>
-        </div>
-      </div>
-    </div>
-  )
-}
+const WEEK_SVG = (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <rect x="1.5" y="2.5" width="11" height="10" rx="2" stroke="currentColor" strokeWidth="1.2"/>
+    <path d="M1.5 5.5h11M7 5.5v7" stroke="currentColor" strokeWidth="1.2"/>
+    <path d="M4.2 5.5v7M9.8 5.5v7" stroke="currentColor" strokeWidth="0.8" opacity="0.55"/>
+  </svg>
+)
 
 export default function App() {
+  const [view, setView] = useState('azi')
+  const [dayOffset, setDayOffset] = useState(0)
   const [weekOffset, setWeekOffset] = useState(0)
   const [activeDayFilter, setActiveDayFilter] = useState(-1)
   const [store, setStore] = useState({})
+  const [recurring, setRecurring] = useState([])
   const [nextId, setNextId] = useState(100)
-  const [modal, setModal] = useState({ isOpen: false, mode: 'add', task: null, dayIdx: null })
-  
-  const dragState = useRef({ id: null, fromDay: null })
-  const sortDrag = useRef({ el: null, day: null, id: null })
-  const gridRef = useRef(null)
-  const hasScrolled = useRef(false)
+  const [modal, setModal] = useState({ isOpen: false, mode: 'add', task: null, dayIdx: null, date: null })
 
-  // Load from localStorage
+  const dragState = useRef({ id: null, fromDay: null })
+
   useEffect(() => {
     try {
-      const data = localStorage.getItem('planner_v2')
-      if (data) {
-        const parsed = JSON.parse(data)
-        setStore(parsed)
-        const allIds = Object.values(parsed).flat().map(t => t.id)
-        if (allIds.length > 0) setNextId(Math.max(...allIds) + 1)
-      }
+      const raw = localStorage.getItem('planner_v2')
+      const data = raw ? JSON.parse(raw) : null
+      if (data && typeof data === 'object') setStore(data)
+      const rawR = localStorage.getItem('planner_recurring_v1')
+      const rec = rawR ? JSON.parse(rawR) : null
+      if (Array.isArray(rec)) setRecurring(rec)
+      const ids = [
+        ...Object.values(data || {}).flat().map(t => t && t.id),
+        ...(rec || []).map(r => r && r.id),
+      ].filter(n => typeof n === 'number')
+      if (ids.length > 0) setNextId(Math.max(...ids) + 1)
     } catch (e) {}
   }, [])
 
-  // Persist to localStorage
   useEffect(() => {
-    try {
-      localStorage.setItem('planner_v2', JSON.stringify(store))
-    } catch (e) {}
+    try { localStorage.setItem('planner_v2', JSON.stringify(store)) } catch (e) {}
   }, [store])
+
+  useEffect(() => {
+    try { localStorage.setItem('planner_recurring_v1', JSON.stringify(recurring)) } catch (e) {}
+  }, [recurring])
 
   const dates = useMemo(() => getDates(weekOffset), [weekOffset])
 
-  // Auto-scroll to today on mount
-  useEffect(() => {
-    if (hasScrolled.current) return
-    const todayIndex = dates.findIndex(d => isToday(d))
-    if (todayIndex >= 0 && gridRef.current) {
-      setTimeout(() => {
-        const cols = gridRef.current.querySelectorAll('.col')
-        if (cols[todayIndex]) {
-          cols[todayIndex].scrollIntoView({ behavior: 'auto', block: 'start' })
-          hasScrolled.current = true
-        }
-      }, 100)
-    }
-  }, [dates])
+  const dayDate = useMemo(() => {
+    const d = new Date()
+    d.setHours(0,0,0,0)
+    d.setDate(d.getDate() + dayOffset)
+    return d
+  }, [dayOffset])
 
   const getTasks = useCallback((weekOff, dayIdx) => {
-    const k = getDayKey(weekOff, dayIdx)
-    return store[k] || []
+    return store[getDayKey(weekOff, dayIdx)] || []
   }, [store])
 
   const setTasks = useCallback((weekOff, dayIdx, arr) => {
     setStore(prev => ({ ...prev, [getDayKey(weekOff, dayIdx)]: arr }))
   }, [])
 
-  const indices = useMemo(() => 
-    activeDayFilter >= 0 ? [activeDayFilter] : Array.from({length:7},(_,i)=>i),
-    [activeDayFilter]
-  )
+  const tasksForDate = useCallback((date) => {
+    const dayIdx = (date.getDay() + 6) % 7
+    const k = getDayKey(weekOffsetForDate(date), dayIdx)
+    return sortByTime([...(store[k] || []), ...instancesOnDate(recurring, date)])
+  }, [store, recurring])
 
-  const openModal = useCallback((dayIdx, task = null) => {
-    setModal({ isOpen: true, mode: task ? 'edit' : 'add', task, dayIdx })
-  }, [])
+  const openModal = useCallback((dayIdx, task = null, date = null) => {
+    const target = task && task.recurringId != null
+      ? recurring.find(r => r.id === task.recurringId) || task
+      : task
+    setModal({ isOpen: true, mode: task ? 'edit' : 'add', task: target, dayIdx, date })
+  }, [recurring])
 
   const closeModal = useCallback(() => {
-    setModal({ isOpen: false, mode: 'add', task: null, dayIdx: null })
+    setModal({ isOpen: false, mode: 'add', task: null, dayIdx: null, date: null })
   }, [])
 
-  const saveTask = useCallback((taskData) => {
+  const saveTask = useCallback((data) => {
     if (modal.mode === 'edit' && modal.task) {
-      const tasks = getTasks(weekOffset, modal.dayIdx)
-      const updated = tasks.map(t => t.id === modal.task.id ? { ...t, ...taskData } : t)
-      setTasks(weekOffset, modal.dayIdx, updated)
+      if (modal.task.repeat) {
+        if (data.repeat) {
+          setRecurring(prev => prev.map(r => r.id === modal.task.id ? { ...r, ...data } : r))
+        } else {
+          setRecurring(prev => prev.filter(r => r.id !== modal.task.id))
+          const k = getDayKey(weekOffsetForDate(modal.date), modal.dayIdx)
+          setStore(prev => ({ ...prev, [k]: [...(prev[k] || []), { id: nextId, ...data }] }))
+          setNextId(n => n + 1)
+        }
+      } else {
+        const k = getDayKey(weekOffsetForDate(modal.date), modal.dayIdx)
+        setStore(prev => ({
+          ...prev,
+          [k]: (prev[k] || []).map(t => String(t.id) === String(modal.task.id) ? { ...t, ...data } : t),
+        }))
+      }
     } else {
-      const tasks = getTasks(weekOffset, modal.dayIdx)
-      tasks.push({ id: nextId, ...taskData })
-      setTasks(weekOffset, modal.dayIdx, tasks)
-      setNextId(prev => prev + 1)
-    }
-    closeModal()
-  }, [modal, weekOffset, nextId, getTasks, setTasks, closeModal])
-
-  const deleteTask = useCallback((taskId) => {
-    const tasks = getTasks(weekOffset, activeDayFilter >= 0 ? activeDayFilter : 0).filter(t => t.id !== taskId)
-    if (activeDayFilter >= 0) {
-      setTasks(weekOffset, activeDayFilter, tasks)
-    } else {
-      for (let i = 0; i < 7; i++) {
-        const t = getTasks(weekOffset, i).filter(x => x.id !== taskId)
-        setTasks(weekOffset, i, t)
+      if (data.repeat) {
+        setRecurring(prev => [...prev, { id: nextId, ...data, doneDates: [] }])
+        setNextId(n => n + 1)
+      } else {
+        const k = getDayKey(weekOffsetForDate(modal.date), modal.dayIdx)
+        setStore(prev => ({ ...prev, [k]: [...(prev[k] || []), { id: nextId, ...data }] }))
+        setNextId(n => n + 1)
       }
     }
-  }, [weekOffset, activeDayFilter, getTasks, setTasks])
+    closeModal()
+  }, [modal, nextId, closeModal])
+
+  const deleteTask = useCallback((task) => {
+    if (task.recurringId != null) {
+      setRecurring(prev => prev.filter(r => r.id !== task.recurringId))
+      return
+    }
+    setStore(prev => {
+      const next = {}
+      for (const k of Object.keys(prev)) {
+        next[k] = prev[k].filter(t => String(t.id) !== String(task.id))
+      }
+      return next
+    })
+  }, [])
+
+  const deleteRecurring = useCallback((id) => {
+    setRecurring(prev => prev.filter(r => r.id !== id))
+  }, [])
+
+  const toggleDone = useCallback((task) => {
+    if (task.recurringId != null) {
+      setRecurring(prev => markRecurringDone(prev, task.recurringId, dateKey(dayDate)))
+      return
+    }
+    setStore(prev => {
+      const next = {}
+      for (const k of Object.keys(prev)) {
+        next[k] = prev[k].map(t => String(t.id) === String(task.id) ? { ...t, done: !t.done } : t)
+      }
+      return next
+    })
+  }, [dayDate])
 
   const filterDay = useCallback((i) => {
     setActiveDayFilter(prev => prev === i ? -1 : i)
@@ -346,7 +163,7 @@ export default function App() {
     dragState.current = { id: taskId, fromDay: dayIdx }
     e.target.classList.add('dragging')
     e.dataTransfer.effectAllowed = 'move'
-    e.dataTransfer.setData('text/plain', taskId)
+    e.dataTransfer.setData('text/plain', String(taskId))
   }, [])
 
   const handleDragEnd = useCallback((e) => {
@@ -371,18 +188,18 @@ export default function App() {
   const handleDrop = useCallback((e, toDay) => {
     e.preventDefault()
     document.querySelectorAll('.col').forEach(c => c.classList.remove('drag-over'))
-    
+
     const taskId = e.dataTransfer.getData('text/plain') || dragState.current.id
     const fromDay = dragState.current.fromDay
-    
+
     if (!taskId) return
 
     const fromTasks = getTasks(weekOffset, fromDay)
     const taskIdx = fromTasks.findIndex(t => String(t.id) === String(taskId))
     if (taskIdx < 0) return
-    
+
     const [task] = fromTasks.splice(taskIdx, 1)
-    
+
     if (fromDay === toDay) {
       fromTasks.splice(taskIdx, 0, task)
       setTasks(weekOffset, fromDay, fromTasks)
@@ -404,22 +221,22 @@ export default function App() {
   const handleTaskDrop = useCallback((e, targetTaskId, dayIdx) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     const taskId = e.dataTransfer.getData('text/plain') || dragState.current.id
     const fromDay = dragState.current.fromDay
-    
+
     if (!taskId || fromDay !== dayIdx) return
 
     const tasks = getTasks(weekOffset, dayIdx)
     const fromIdx = tasks.findIndex(t => String(t.id) === String(taskId))
     const toIdx = tasks.findIndex(t => String(t.id) === String(targetTaskId))
-    
+
     if (fromIdx < 0 || toIdx < 0) return
-    
+
     const [movedTask] = tasks.splice(fromIdx, 1)
     tasks.splice(toIdx, 0, movedTask)
     setTasks(weekOffset, dayIdx, tasks)
-    
+
     dragState.current = { id: null, fromDay: null }
   }, [weekOffset, getTasks, setTasks])
 
@@ -427,68 +244,82 @@ export default function App() {
     <div className="app">
       <div className="top">
         <div className="brand">
-          <img src="/logo.png" alt="Logo" className="brand-logo" />
+          <img src="/planificator_logo.png" alt="Logo" className="brand-logo" />
           <div className="brand-text">
             <div className="brand-title">Săptămâna mea</div>
             <div className="brand-sub">Planificator personal</div>
           </div>
         </div>
-        <div className="week-nav">
-          <button className="nav-btn" onClick={() => setWeekOffset(w => w - 1)}>←</button>
-          <div className="week-range">{formatWeekRange(weekOffset)}</div>
-          <button className="nav-btn" onClick={() => setWeekOffset(w => w + 1)}>→</button>
-        </div>
-      </div>
-
-      <div className="days-strip">
-        {dates.map((d, i) => (
-          <div
-            key={i}
-            className={`day-pill ${activeDayFilter === i ? 'active' : ''} ${isToday(d) ? 'today' : ''}`}
-            onClick={() => filterDay(i)}
-          >
-            <span className="pname">{DAYS[i].slice(0,3)}</span>
-            <span className="pnum">{d.getDate()}</span>
+        {view === 'saptamana' && (
+          <div className="week-nav">
+            <button className="nav-btn" onClick={() => setWeekOffset(w => w - 1)}>←</button>
+            <div className="week-range">{formatWeekRange(weekOffset)}</div>
+            <button className="nav-btn" onClick={() => setWeekOffset(w => w + 1)}>→</button>
           </div>
-        ))}
+        )}
       </div>
 
-      <div className="legend">
-        <div className="leg-item"><div className="leg-dot" style={{background:'var(--work)'}}></div> Muncă</div>
-        <div className="leg-item"><div className="leg-dot" style={{background:'var(--course)'}}></div> Curs</div>
-        <div className="leg-item"><div className="leg-dot" style={{background:'var(--hobby)'}}></div> Hobby</div>
-        <div className="leg-item"><div className="leg-dot" style={{background:'var(--personal)'}}></div> Personal</div>
-        <div className="leg-item"><div className="leg-dot" style={{background:'var(--health)'}}></div> Sănătate</div>
-        <div className="leg-item"><div className="leg-dot" style={{background:'var(--learn)'}}></div> Învățare</div>
-        <div className="leg-item"><div className="leg-dot" style={{background:'var(--rest)'}}></div> Odihnă</div>
-      </div>
+      <nav className="view-nav">
+        <button
+          type="button"
+          className={`view-tab ${view === 'azi' ? 'active' : ''}`}
+          onClick={() => setView('azi')}
+          aria-current={view === 'azi' ? 'page' : undefined}
+        >
+          {DAY_SVG}
+          Azi
+        </button>
+        <button
+          type="button"
+          className={`view-tab ${view === 'saptamana' ? 'active' : ''}`}
+          onClick={() => setView('saptamana')}
+          aria-current={view === 'saptamana' ? 'page' : undefined}
+        >
+          {WEEK_SVG}
+          Săptămâna
+        </button>
+      </nav>
 
-      <div className="grid" ref={gridRef}>
-        {indices.map(i => (
-          <Column
-            key={i}
-            dayIdx={i}
-            tasks={getTasks(weekOffset, i)}
-            date={dates[i]}
-            onAdd={(dayIdx) => openModal(dayIdx)}
-            onEdit={(task) => openModal(modal.dayIdx ?? i, task)}
-            onDelete={deleteTask}
-            onDragStart={(e) => handleDragStart(e, e.target.dataset.id, i)}
-            onDragEnd={handleDragEnd}
-            onDragOver={(e) => handleDragOver(e, i)}
-            onDragLeave={(e) => handleDragLeave(e, i)}
-            onDrop={(e) => handleDrop(e, i)}
-            onTaskDragOver={handleTaskDragOver}
-            onTaskDrop={handleTaskDrop}
-          />
-        ))}
-      </div>
+      {view === 'azi' ? (
+        <DayView
+          date={dayDate}
+          tasks={tasksForDate(dayDate)}
+          recurring={recurring}
+          dayOffset={dayOffset}
+          onPrevDay={() => setDayOffset(o => o - 1)}
+          onNextDay={() => setDayOffset(o => o + 1)}
+          onAdd={() => openModal((dayDate.getDay() + 6) % 7, null, dayDate)}
+          onEdit={(task) => openModal((dayDate.getDay() + 6) % 7, task, dayDate)}
+          onDelete={deleteTask}
+          onToggleDone={toggleDone}
+          onDeleteRecurring={deleteRecurring}
+        />
+      ) : (
+        <WeekView
+          dates={dates}
+          getDayTasks={(dayIdx) => tasksForDate(dates[dayIdx])}
+          activeDayFilter={activeDayFilter}
+          onFilterDay={filterDay}
+          onAdd={(dayIdx) => openModal(dayIdx, null, dates[dayIdx])}
+          onEdit={(task, dayIdx) => openModal(dayIdx, task, dates[dayIdx])}
+          onDelete={deleteTask}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onTaskDragOver={handleTaskDragOver}
+          onTaskDrop={handleTaskDrop}
+        />
+      )}
 
       <Modal
         isOpen={modal.isOpen}
         mode={modal.mode}
         task={modal.task}
         dayIdx={modal.dayIdx}
+        dayLabel={modal.dayIdx != null ? DAYS[modal.dayIdx] : ''}
+        isRecurring={!!modal.task?.repeat}
         onClose={closeModal}
         onSave={saveTask}
       />

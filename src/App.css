@@ -217,9 +217,28 @@ body::before {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
+.view-nav { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+.view-tab {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 999px;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text2); font-size: 13px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.view-tab:hover { color: var(--text); border-color: var(--accent); background: var(--surface2); }
+.view-tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
 @media (max-width: 600px) {
   .grid { grid-template-columns: 1fr; }
   .top { flex-direction: column; align-items: center; text-align: center; }
   .brand { align-items: center; }
   .legend { justify-content: center; }
+  .app { padding: 24px 16px calc(96px + env(safe-area-inset-bottom)); }
+  .view-nav {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    margin: 0; padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    background: var(--surface); border-top: 1px solid var(--border2);
+    justify-content: center; gap: 12px; z-index: 100;
+  }
+  .view-tab { flex: 1; justify-content: center; padding: 13px 0; font-size: 14px; }
 }

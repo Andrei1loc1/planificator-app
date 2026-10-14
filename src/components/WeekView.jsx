@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import TaskCard from './TaskCard.jsx'
 import { conflictIds } from '../lib/day.js'
 import { DAYS, MONTHS, isToday } from '../lib/dates.js'
@@ -31,7 +32,7 @@ function Column({ dayIdx, tasks, date, onAdd, onEdit, onDelete, onDragStart, onD
             task={task}
             variant="week"
             conflict={conflicts.has(task.id)}
-            onEdit={onEdit}
+            onEdit={(task) => onEdit(task, dayIdx)}
             onDelete={onDelete}
             onDragStart={(e, id) => onDragStart(e, id, dayIdx)}
             onDragEnd={onDragEnd}
@@ -53,6 +54,14 @@ function Column({ dayIdx, tasks, date, onAdd, onEdit, onDelete, onDragStart, onD
 }
 
 export default function WeekView({ dates, getDayTasks, activeDayFilter, onFilterDay, onAdd, onEdit, onDelete, onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop, onTaskDragOver, onTaskDrop }) {
+  const gridRef = useRef(null)
+
+  useEffect(() => {
+    const idx = dates.findIndex(d => isToday(d))
+    if (idx < 0 || !gridRef.current) return
+    gridRef.current.querySelector(`.col[data-day="${idx}"]`)?.scrollIntoView({ behavior: 'auto', block: 'start' })
+  }, [dates])
+
   const indices = activeDayFilter >= 0
     ? [activeDayFilter]
     : Array.from({length:7},(_,i)=>i)
@@ -78,7 +87,7 @@ export default function WeekView({ dates, getDayTasks, activeDayFilter, onFilter
         ))}
       </div>
 
-      <div className="grid">
+      <div className="grid" ref={gridRef}>
         {indices.map(i => (
           <Column
             key={i}
