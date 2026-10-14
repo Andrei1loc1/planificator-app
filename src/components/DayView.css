@@ -1,0 +1,246 @@
+.dayview {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.day-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.day-arrows { display: flex; gap: 8px; }
+
+.day-arrows button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.day-arrows button:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.day-title-wrap {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.day-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.day-date {
+  font-size: 12px;
+  color: var(--text3);
+  letter-spacing: 0.04em;
+}
+
+.day-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.day-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.day-add-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.day-digest {
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.day-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.day-progress-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.day-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+.day-progress-label {
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+.day-now {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+
+.day-now-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.day-now-info { flex: 1; min-width: 0; }
+
+.day-now-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+}
+
+.day-now-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  line-height: 1.2;
+  margin-top: 3px;
+  word-break: break-word;
+}
+
+.day-now-sub {
+  font-size: 13px;
+  color: var(--accent);
+  margin-top: 4px;
+}
+
+.day-free {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.day-free-chip {
+  font-size: 12px;
+  color: var(--text2);
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.day-recurring {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.day-recurring h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.day-rec-sub {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text3);
+  margin: 4px 0 12px;
+}
+
+.day-rec-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.day-rec-row + .day-rec-row { border-top: 1px solid var(--border); }
+
+.day-rec-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.day-rec-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.day-rec-when {
+  font-size: 12px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.day-rec-actions { display: flex; gap: 4px; }
+
+@media (min-width: 900px) {
+  .dayview { max-width: 820px; }
+  .day-title { font-size: 34px; }
+  .day-list { gap: 12px; }
+}
