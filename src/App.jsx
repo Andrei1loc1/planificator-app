@@ -8,6 +8,9 @@ const TYPE = {
   course:   { color: 'var(--course)',   bg: 'var(--course-bg)',   label: 'Curs' },
   hobby:    { color: 'var(--hobby)',    bg: 'var(--hobby-bg)',    label: 'Hobby' },
   personal: { color: 'var(--personal)', bg: 'var(--personal-bg)', label: 'Personal' },
+  health:   { color: 'var(--health)',   bg: 'var(--health-bg)',   label: 'Sănătate' },
+  learn:    { color: 'var(--learn)',    bg: 'var(--learn-bg)',    label: 'Învățare' },
+  rest:     { color: 'var(--rest)',     bg: 'var(--rest-bg)',     label: 'Odihnă' },
 }
 
 function getISOWeek(d) {
@@ -61,13 +64,13 @@ function formatWeekRange(offset) {
 
 function TaskCard({ task, dayIdx, onEdit, onDelete, onDragStart, onDragEnd, onDragOver, onDrop }) {
   const tp = TYPE[task.type] || TYPE.work
-  const timeStr = task.time 
+  const timeStr = (task.time || task.endTime)
     ? <span className="card-time">
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
           <circle cx="5" cy="5" r="4" stroke="currentColor" strokeWidth="1"/>
           <path d="M5 3v2l1.5 1" stroke="currentColor" strokeWidth="1" strokeLinecap="round"/>
         </svg>
-        {task.time}
+        {[task.time, task.endTime].filter(Boolean).join(' – ')}
       </span>
     : ''
 
@@ -157,6 +160,7 @@ function Modal({ isOpen, mode, task, dayIdx, onClose, onSave }) {
   const [title, setTitle] = useState('')
   const [type, setType] = useState('work')
   const [time, setTime] = useState('')
+  const [endTime, setEndTime] = useState('')
   const titleRef = useRef(null)
 
   useEffect(() => {
@@ -165,10 +169,12 @@ function Modal({ isOpen, mode, task, dayIdx, onClose, onSave }) {
         setTitle(task.title)
         setType(task.type)
         setTime(task.time || '')
+        setEndTime(task.endTime || '')
       } else {
         setTitle('')
         setType('work')
         setTime('')
+        setEndTime('')
       }
       setTimeout(() => titleRef.current?.focus(), 80)
     }
@@ -179,7 +185,7 @@ function Modal({ isOpen, mode, task, dayIdx, onClose, onSave }) {
       titleRef.current?.focus()
       return
     }
-    onSave({ title: title.trim(), type, time })
+    onSave({ title: title.trim(), type, time, endTime })
   }
 
   const handleKeyDown = (e) => {
@@ -204,19 +210,26 @@ function Modal({ isOpen, mode, task, dayIdx, onClose, onSave }) {
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
+        <div className="field">
+          <label>Tip</label>
+          <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="work">Muncă</option>
+            <option value="course">Curs</option>
+            <option value="hobby">Hobby</option>
+            <option value="personal">Personal</option>
+            <option value="health">Sănătate</option>
+            <option value="learn">Învățare</option>
+            <option value="rest">Odihnă</option>
+          </select>
+        </div>
         <div className="field-row">
           <div className="field">
-            <label>Tip</label>
-            <select value={type} onChange={(e) => setType(e.target.value)}>
-              <option value="work">Muncă</option>
-              <option value="course">Curs</option>
-              <option value="hobby">Hobby</option>
-              <option value="personal">Personal</option>
-            </select>
+            <label>Început (opțional)</label>
+            <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
           </div>
           <div className="field">
-            <label>Oră (opțional)</label>
-            <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+            <label>Sfârșit</label>
+            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
           </div>
         </div>
         <div className="modal-btns">
@@ -445,6 +458,9 @@ export default function App() {
         <div className="leg-item"><div className="leg-dot" style={{background:'var(--course)'}}></div> Curs</div>
         <div className="leg-item"><div className="leg-dot" style={{background:'var(--hobby)'}}></div> Hobby</div>
         <div className="leg-item"><div className="leg-dot" style={{background:'var(--personal)'}}></div> Personal</div>
+        <div className="leg-item"><div className="leg-dot" style={{background:'var(--health)'}}></div> Sănătate</div>
+        <div className="leg-item"><div className="leg-dot" style={{background:'var(--learn)'}}></div> Învățare</div>
+        <div className="leg-item"><div className="leg-dot" style={{background:'var(--rest)'}}></div> Odihnă</div>
       </div>
 
       <div className="grid" ref={gridRef}>
