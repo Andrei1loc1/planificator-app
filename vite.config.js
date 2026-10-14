@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'logo.png'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'logo.png', 'planificator_logo.png'],
       manifest: {
         name: 'Planificator Săptămânal',
         short_name: 'Planificator',
@@ -20,14 +20,10 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'logo_pwa.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'logo_pwa.png',
-            sizes: '512x512',
-            type: 'image/png'
+            src: 'planificator_logo.png',
+            sizes: '387x397',
+            type: 'image/png',
+            purpose: 'any'
           }
         ]
       },
