@@ -192,6 +192,7 @@ body::before {
   border-radius: 10px; color: var(--text); font-size: 13px;
   font-family: 'DM Sans', sans-serif; outline: none;
   transition: border-color 0.15s;
+  color-scheme: dark;
 }
 .field input:focus, .field select:focus { border-color: var(--accent); }
 .field select option { background: #1f1f27; }

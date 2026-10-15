@@ -91,12 +91,22 @@ export default function Modal({ isOpen, mode, task, dayIdx, dayLabel, isRecurrin
         </div>
         <div className="field-row">
           <div className="field">
-            <label>Început (opțional)</label>
-            <input type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+            <label>Început</label>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              onClick={(e) => { try { e.target.showPicker() } catch (err) {} }}
+            />
           </div>
           <div className="field">
             <label>Sfârșit</label>
-            <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+            <input
+              type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              onClick={(e) => { try { e.target.showPicker() } catch (err) {} }}
+            />
           </div>
         </div>
         <div className="field">
