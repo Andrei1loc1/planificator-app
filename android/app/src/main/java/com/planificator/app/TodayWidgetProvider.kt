@@ -13,6 +13,7 @@ import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.max
 import kotlin.math.min
 
 private class TaskData(val title: String, val time: String, val color: String, val done: Boolean)
@@ -53,6 +54,9 @@ class TodayWidgetProvider : AppWidgetProvider() {
 
         fun render(context: Context, manager: AppWidgetManager, appWidgetId: Int) {
             val views = RemoteViews(context.packageName, R.layout.widget_today)
+            val options = manager.getAppWidgetOptions(appWidgetId)
+            val heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 180)
+            val capacity = rowCapacity(heightDp)
             val today = loadToday(context)
             if (today == null) {
                 views.setTextViewText(R.id.widget_label, "")
@@ -66,7 +70,7 @@ class TodayWidgetProvider : AppWidgetProvider() {
             } else {
                 views.setTextViewText(R.id.widget_label, "· " + today.label)
                 views.setTextViewText(R.id.widget_count, "${today.done}/${today.total} bifate")
-                renderRows(views, today)
+                renderRows(views, today, capacity)
                 if (today.tasks.isEmpty()) {
                     views.setTextViewText(R.id.widget_empty, "Nimic azi — deschide aplicația")
                     views.setViewVisibility(R.id.widget_empty, View.VISIBLE)
@@ -82,8 +86,16 @@ class TodayWidgetProvider : AppWidgetProvider() {
             manager.updateAppWidget(appWidgetId, views)
         }
 
-        private fun renderRows(views: RemoteViews, today: DayData) {
-            val shown = min(today.tasks.size, MAX_ROWS)
+        private fun rowCapacity(heightDp: Int): Int {
+            val ROOT_PAD_DP = 28
+            val HEADER_DP = 40
+            val CARD_DP = 52
+            val capacity = (heightDp - ROOT_PAD_DP - HEADER_DP) / CARD_DP
+            return max(1, min(capacity, MAX_ROWS))
+        }
+
+        private fun renderRows(views: RemoteViews, today: DayData, capacity: Int) {
+            val shown = min(today.tasks.size, capacity)
             for (i in 0 until MAX_ROWS) {
                 if (i < shown) {
                     val task = today.tasks[i]
@@ -102,9 +114,9 @@ class TodayWidgetProvider : AppWidgetProvider() {
                     views.setViewVisibility(ROW_IDS[i], View.GONE)
                 }
             }
-            if (today.tasks.size > MAX_ROWS) {
+            if (today.tasks.size > capacity) {
                 views.setViewVisibility(R.id.row_more, View.VISIBLE)
-                views.setTextViewText(R.id.row_more, "Încă ${today.tasks.size - MAX_ROWS}…")
+                views.setTextViewText(R.id.row_more, "Încă ${today.tasks.size - capacity}…")
             } else {
                 views.setViewVisibility(R.id.row_more, View.GONE)
             }

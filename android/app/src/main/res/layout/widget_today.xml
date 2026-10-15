@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -19,14 +20,14 @@
             android:layout_height="wrap_content"
             android:text="Azi"
             android:textColor="#f0eee8"
-            android:textSize="13sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/widget_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="5dp"
             android:textColor="#8b8a99"
             android:textSize="12sp" />
 
@@ -44,18 +45,31 @@
         android:id="@+id/row_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:background="@drawable/task_card_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="11dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/dot_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="●"
             android:textColor="#8b8a99"
-            android:textSize="10sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/title_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#f0eee8"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/time_1"
@@ -63,17 +77,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="#8b8a99"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/title_1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="#f0eee8"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -81,18 +84,32 @@
         android:id="@+id/row_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/task_card_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="11dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/dot_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="●"
             android:textColor="#8b8a99"
-            android:textSize="10sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/title_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#f0eee8"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/time_2"
@@ -100,17 +117,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="#8b8a99"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/title_2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="#f0eee8"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -118,18 +124,32 @@
         android:id="@+id/row_3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/task_card_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="11dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/dot_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="●"
             android:textColor="#8b8a99"
-            android:textSize="10sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/title_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#f0eee8"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/time_3"
@@ -137,17 +157,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="#8b8a99"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/title_3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="#f0eee8"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -155,18 +164,32 @@
         android:id="@+id/row_4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/task_card_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="11dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/dot_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="●"
             android:textColor="#8b8a99"
-            android:textSize="10sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/title_4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#f0eee8"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/time_4"
@@ -174,17 +197,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="#8b8a99"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/title_4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="#f0eee8"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -192,18 +204,32 @@
         android:id="@+id/row_5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/task_card_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="11dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/dot_5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="●"
             android:textColor="#8b8a99"
-            android:textSize="10sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/title_5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#f0eee8"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/time_5"
@@ -211,17 +237,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="#8b8a99"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/title_5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="#f0eee8"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -229,18 +244,32 @@
         android:id="@+id/row_6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/task_card_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="11dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/dot_6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:text="●"
             android:textColor="#8b8a99"
-            android:textSize="10sp" />
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/title_6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#f0eee8"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/time_6"
@@ -248,17 +277,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="#8b8a99"
-            android:textSize="11sp" />
-
-        <TextView
-            android:id="@+id/title_6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:singleLine="true"
-            android:textColor="#f0eee8"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -266,9 +284,10 @@
         android:id="@+id/row_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="8dp"
         android:textColor="#50505f"
-        android:textSize="11sp"
+        android:textSize="12sp"
         android:visibility="gone" />
 
     <TextView
@@ -276,8 +295,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@drawable/task_card_bg"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="13dp"
         android:textColor="#8b8a99"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:visibility="gone" />
 
 </LinearLayout>
