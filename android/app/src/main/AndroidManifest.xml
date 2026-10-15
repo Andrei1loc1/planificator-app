@@ -44,6 +44,11 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_today_info" />
         </receiver>
+
+        <service
+            android:name=".TaskListService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
     <!-- Permissions -->

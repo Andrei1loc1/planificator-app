@@ -42,6 +42,7 @@ class WidgetSyncPlugin : Plugin() {
             for (id in ids) {
                 TodayWidgetProvider.render(context, manager, id)
             }
+            manager.notifyAppWidgetViewDataChanged(ids, R.id.task_list)
         }
     }
 }
