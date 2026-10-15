@@ -234,7 +234,7 @@ body::before {
   .top { flex-direction: column; align-items: center; text-align: center; }
   .brand { align-items: center; }
   .legend { justify-content: center; }
-  .app { padding: 24px 16px calc(96px + env(safe-area-inset-bottom)); }
+  .app { padding: calc(36px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom)); }
   .view-nav {
     position: fixed; left: 0; right: 0; bottom: 0;
     margin: 0; padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
