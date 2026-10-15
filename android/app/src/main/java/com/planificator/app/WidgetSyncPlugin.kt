@@ -3,10 +3,10 @@ package com.planificator.app
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
-import com.getcapacitor.CapacitorPlugin
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
+import com.getcapacitor.annotation.CapacitorPlugin
 
 @CapacitorPlugin(name = "WidgetSync")
 class WidgetSyncPlugin : Plugin() {
