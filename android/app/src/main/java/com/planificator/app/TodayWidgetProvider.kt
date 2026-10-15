@@ -96,11 +96,20 @@ class TodayWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widget_today)
             val today = WidgetData.loadToday(context)
             if (today == null) {
-                views.setTextViewText(R.id.widget_label, "")
+                views.setTextViewText(R.id.widget_day_name, "")
+                views.setTextViewText(R.id.widget_day_date, "")
                 views.setTextViewText(R.id.widget_count, "")
+                views.setViewVisibility(R.id.widget_progress, android.view.View.GONE)
             } else {
-                views.setTextViewText(R.id.widget_label, "· " + today.label)
-                views.setTextViewText(R.id.widget_count, "${today.done}/${today.total} bifate")
+                val parts = today.label.split(", ", limit = 2)
+                views.setTextViewText(R.id.widget_day_name, parts[0])
+                views.setTextViewText(R.id.widget_day_date, if (parts.size > 1) parts[1] else "")
+                views.setTextViewText(R.id.widget_count, "${today.done}/${today.total}")
+                views.setProgressBar(R.id.widget_progress, maxOf(today.total, 1), today.done, false)
+                views.setViewVisibility(
+                    R.id.widget_progress,
+                    if (today.total > 0) android.view.View.VISIBLE else android.view.View.GONE
+                )
             }
 
             val listIntent = Intent(context, TaskListService::class.java)
