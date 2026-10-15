@@ -5,6 +5,8 @@ import DayView from './components/DayView.jsx'
 import { DAYS, getDates, getDayKey, weekOffsetForDate, dateKey, formatWeekRange } from './lib/dates.js'
 import { sortByTime } from './lib/day.js'
 import { instancesOnDate, markRecurringDone } from './lib/recurring.js'
+import { buildWidgetPayload } from './lib/widget-data.js'
+import { syncWidget } from './lib/widget-bridge.js'
 
 const DAY_SVG = (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -57,6 +59,15 @@ export default function App() {
   useEffect(() => {
     try { localStorage.setItem('planner_recurring_v1', JSON.stringify(recurring)) } catch (e) {}
   }, [recurring])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const todayMidnight = new Date()
+      todayMidnight.setHours(0,0,0,0)
+      syncWidget(buildWidgetPayload(store, recurring, todayMidnight))
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [store, recurring])
 
   const dates = useMemo(() => getDates(weekOffset), [weekOffset])
 
