@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Planificator</string>
+    <string name="title_activity_main">Planificator</string>
+    <string name="package_name">com.planificator.app</string>
+    <string name="custom_url_scheme">com.planificator.app</string>
+</resources>

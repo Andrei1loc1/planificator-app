@@ -1,0 +1,8 @@
+{
+  "appId": "com.planificator.app",
+  "appName": "Planificator",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#0e0e11"
+  }
+}
