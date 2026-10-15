@@ -15,6 +15,7 @@ class TaskListService : RemoteViewsService() {
 private class TaskListFactory(private val context: Context, intent: Intent) : RemoteViewsService.RemoteViewsFactory {
 
     private var tasks: List<TaskData> = emptyList()
+    private var nowMin: Int = 0
     private val style: Int = intent.getIntExtra("style", 0)
 
     init {
@@ -26,7 +27,8 @@ private class TaskListFactory(private val context: Context, intent: Intent) : Re
     }
 
     override fun onDataSetChanged() {
-        tasks = WidgetData.loadToday(context)?.tasks ?: emptyList()
+        nowMin = WidgetData.nowMinutes()
+        tasks = WidgetData.sortForWidget(WidgetData.loadToday(context)?.tasks ?: emptyList(), nowMin)
     }
 
     override fun onDestroy() {
@@ -45,7 +47,7 @@ private class TaskListFactory(private val context: Context, intent: Intent) : Re
         views.setTextViewText(R.id.item_title, task.title)
         views.setTextViewText(R.id.item_time, task.time)
         views.setInt(R.id.item_dot, "setTextColor", WidgetData.parseColor(task.color))
-        if (task.done) {
+        if (task.done || WidgetData.isPast(task, nowMin)) {
             views.setInt(R.id.item_title, "setTextColor", WidgetData.COLOR_DONE)
             views.setInt(R.id.item_time, "setTextColor", WidgetData.COLOR_DONE)
         } else {
