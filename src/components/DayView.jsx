@@ -46,8 +46,16 @@ export default function DayView({ date, tasks, recurring, dayOffset, onPrevDay, 
     <div className="dayview">
       <header className="day-head">
         <div className="day-arrows">
-          <button type="button" onClick={onPrevDay} aria-label="Ziua precedentă">←</button>
-          <button type="button" onClick={onNextDay} aria-label="Ziua următoare">→</button>
+          <button type="button" onClick={onPrevDay} aria-label="Ziua precedentă">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M9 3L5 7l4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <button type="button" onClick={onNextDay} aria-label="Ziua următoare">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
         <div className="day-title-wrap">
           <h2 className="day-title">{DAYS[(date.getDay() + 6) % 7]}</h2>

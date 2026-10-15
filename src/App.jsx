@@ -263,9 +263,17 @@ export default function App() {
         </div>
         {view === 'saptamana' && (
           <div className="week-nav">
-            <button className="nav-btn" onClick={() => setWeekOffset(w => w - 1)}>←</button>
+            <button className="nav-btn" onClick={() => setWeekOffset(w => w - 1)} aria-label="Săptămâna precedentă">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M9 3L5 7l4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
             <div className="week-range">{formatWeekRange(weekOffset)}</div>
-            <button className="nav-btn" onClick={() => setWeekOffset(w => w + 1)}>→</button>
+            <button className="nav-btn" onClick={() => setWeekOffset(w => w + 1)} aria-label="Săptămâna următoare">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M5 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
         )}
       </div>
