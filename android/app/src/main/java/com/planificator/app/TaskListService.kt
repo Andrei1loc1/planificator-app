@@ -37,7 +37,6 @@ private class TaskListFactory(private val context: Context, intent: Intent) : Re
 
     override fun getViewAt(position: Int): RemoteViews {
         val layoutId = when {
-            style == 1 && position == tasks.size - 1 -> R.layout.task_row_item_last
             style == 1 -> R.layout.task_row_item
             else -> R.layout.task_card_item
         }
