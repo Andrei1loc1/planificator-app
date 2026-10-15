@@ -98,14 +98,9 @@ class TodayWidgetProvider : AppWidgetProvider() {
             if (today == null) {
                 views.setTextViewText(R.id.widget_label, "")
                 views.setTextViewText(R.id.widget_count, "")
-                views.setTextViewText(R.id.widget_empty, "Deschide aplicația pentru azi")
             } else {
                 views.setTextViewText(R.id.widget_label, "· " + today.label)
                 views.setTextViewText(R.id.widget_count, "${today.done}/${today.total} bifate")
-                views.setTextViewText(
-                    R.id.widget_empty,
-                    if (today.tasks.isEmpty()) "Nimic azi — deschide aplicația" else ""
-                )
             }
 
             val listIntent = Intent(context, TaskListService::class.java)
@@ -117,6 +112,7 @@ class TodayWidgetProvider : AppWidgetProvider() {
             val launchIntent = Intent(context, MainActivity::class.java)
             val launchPending = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE)
             views.setOnClickPendingIntent(R.id.widget_root, launchPending)
+            views.setOnClickPendingIntent(R.id.widget_empty, launchPending)
             views.setPendingIntentTemplate(R.id.task_list, launchPending)
 
             manager.updateAppWidget(appWidgetId, views)

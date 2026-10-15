@@ -51,16 +51,33 @@
         android:listSelector="@android:color/transparent"
         android:paddingBottom="2dp" />
 
-    <TextView
+    <LinearLayout
         android:id="@+id/widget_empty"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:background="@drawable/task_card_bg"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="13dp"
-        android:textColor="#8b8a99"
-        android:textSize="13sp"
-        android:visibility="gone" />
+        android:background="@drawable/add_btn_bg"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:textColor="#8b8a99"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="Adaugă task"
+            android:textColor="#8b8a99"
+            android:textSize="12sp" />
+    </LinearLayout>
 
 </LinearLayout>
