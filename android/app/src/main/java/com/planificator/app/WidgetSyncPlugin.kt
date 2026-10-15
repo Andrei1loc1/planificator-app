@@ -40,9 +40,14 @@ class WidgetSyncPlugin : Plugin() {
             val manager = AppWidgetManager.getInstance(context)
             val ids = manager.getAppWidgetIds(ComponentName(context, TodayWidgetProvider::class.java))
             for (id in ids) {
-                TodayWidgetProvider.render(context, manager, id)
+                WidgetRenderer.render(context, manager, id, R.layout.widget_today, 0)
             }
             manager.notifyAppWidgetViewDataChanged(ids, R.id.task_list)
+            val linesIds = manager.getAppWidgetIds(ComponentName(context, TodayLinesWidgetProvider::class.java))
+            for (id in linesIds) {
+                WidgetRenderer.render(context, manager, id, R.layout.widget_lines, 1)
+            }
+            manager.notifyAppWidgetViewDataChanged(linesIds, R.id.task_list)
         }
     }
 }

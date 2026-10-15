@@ -15,6 +15,7 @@ class TaskListService : RemoteViewsService() {
 private class TaskListFactory(private val context: Context, intent: Intent) : RemoteViewsService.RemoteViewsFactory {
 
     private var tasks: List<TaskData> = emptyList()
+    private val style: Int = intent.getIntExtra("style", 0)
 
     init {
         intent.getIntExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
@@ -35,7 +36,12 @@ private class TaskListFactory(private val context: Context, intent: Intent) : Re
     override fun getCount(): Int = tasks.size
 
     override fun getViewAt(position: Int): RemoteViews {
-        val views = RemoteViews(context.packageName, R.layout.task_card_item)
+        val layoutId = when {
+            style == 1 && position == tasks.size - 1 -> R.layout.task_row_item_last
+            style == 1 -> R.layout.task_row_item
+            else -> R.layout.task_card_item
+        }
+        val views = RemoteViews(context.packageName, layoutId)
         val task = tasks[position]
         views.setTextViewText(R.id.item_title, task.title)
         views.setTextViewText(R.id.item_time, task.time)
@@ -52,7 +58,7 @@ private class TaskListFactory(private val context: Context, intent: Intent) : Re
 
     override fun getLoadingView(): RemoteViews? = null
 
-    override fun getViewTypeCount(): Int = 1
+    override fun getViewTypeCount(): Int = 3
 
     override fun hasStableIds(): Boolean = false
 
